@@ -5,6 +5,8 @@ from github import Github
 
 dotenv.load_dotenv()
 
+github_access = Github(os.environ['GITHUB_ACCESS_TOKEN'])
+
 
 def get_local_version():
     """ Check the local version of the program"""
@@ -19,8 +21,16 @@ def get_local_version():
 
 
 def get_remote_version():
-    """ Check the latest version of the program on the repository"""
-    github_access = Github(os.environ['GITHUB_ACCESS_TOKEN'])
+    """ Check the latest version of the program on the repository
+
+    NOTE: change to something that doesn't need a github access token
+    """
+    repo = github_access.get_repo(os.environ['REPO_NAME'])
+
+    version_file = repo.get_contents('remote_version.cfg')
+    version = version_file.decoded_content.decode('utf-8')
+
+    return version
 
 
 def init_update_operation():
@@ -28,6 +38,12 @@ def init_update_operation():
 
         Updates all the local files and starts the main program
     """
+    print('versions not matching, running update function')
+
+    # get all the new files from the repository in a temp directory
+
+
+def start_main_program(location):
     pass
 
 
