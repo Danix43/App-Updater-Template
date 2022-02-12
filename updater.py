@@ -44,10 +44,10 @@ def init_update_operation():
     try:
         os.mkdir('temp')
     except FileExistsError:
-        print('temp folder already exists')
+        # print('temp folder already exists')
+        pass
 
     temp_folder_path = os.getcwd() + os.sep + 'temp'
-    print('temp folder path: {}'.format(temp_folder_path))
 
     # get the download links from the repository
     files_links = list(
@@ -55,13 +55,16 @@ def init_update_operation():
 
     # download the files to the temp folder
     for link in files_links:
-        download_file(link, temp_folder_path)
+        file_name = download_file(link, temp_folder_path)
 
     # copy from temp to root
+    shutil.copytree(temp_folder_path, os.getcwd(), dirs_exist_ok=True)
 
 
 def start_main_program(file_path):
-    pass
+    print('starting main program')
+    # os.system('exec {}'.format(file_path))
+    exec(open(file_path).read())
 
 
 def download_file(url, destinationPath=''):
@@ -93,3 +96,4 @@ if __name__ == '__main__':
         print('the same version runs on local and remote')
     else:
         init_update_operation()
+        start_main_program('main.py')
