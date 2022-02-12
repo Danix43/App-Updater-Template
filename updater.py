@@ -1,7 +1,8 @@
 import os
 import dotenv
 from github import Github
-
+import requests
+import shutil
 
 dotenv.load_dotenv()
 
@@ -48,13 +49,36 @@ def init_update_operation():
     temp_folder_path = os.getcwd() + os.sep + 'temp'
     print('temp folder path: {}'.format(temp_folder_path))
 
-    # get the files from the repository
-    files = repo.get_contents('update')
-    print(files)
+    # get the download links from the repository
+    files_links = list(
+        file.download_url for file in repo.get_contents('update'))
+
+    # download the files to the temp folder
+    for link in files_links:
+        download_file(link, temp_folder_path)
+
+    # copy from temp to root
 
 
-def start_main_program(location):
+def start_main_program(file_path):
     pass
+
+
+def download_file(url, destinationPath=''):
+    """
+        Found here: https://stackoverflow.com/questions/16694907/download-large-file-in-python-with-requests
+
+        Added destinationPath param to download the file to an another folder other than the root
+    """
+
+    local_filename = url.split('/')[-1]
+    with requests.get(url, stream=True) as r:
+        with open(destinationPath + os.sep + local_filename, 'wb') as f:
+            # raw bytes fix
+            r.raw.decode_content = True
+
+            shutil.copyfileobj(r.raw, f)
+    return local_filename
 
 
 if __name__ == '__main__':
