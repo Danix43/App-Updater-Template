@@ -6,6 +6,7 @@ from github import Github
 dotenv.load_dotenv()
 
 github_access = Github(os.environ['GITHUB_ACCESS_TOKEN'])
+repo = github_access.get_repo(os.environ['REPO_NAME'])
 
 
 def get_local_version():
@@ -25,8 +26,6 @@ def get_remote_version():
 
     NOTE: change to something that doesn't need a github access token
     """
-    repo = github_access.get_repo(os.environ['REPO_NAME'])
-
     version_file = repo.get_contents('remote_version.cfg')
     version = version_file.decoded_content.decode('utf-8')
 
@@ -41,6 +40,17 @@ def init_update_operation():
     print('versions not matching, running update function')
 
     # get all the new files from the repository in a temp directory
+    try:
+        os.mkdir('temp')
+    except FileExistsError:
+        print('temp folder already exists')
+
+    temp_folder_path = os.getcwd() + os.sep + 'temp'
+    print('temp folder path: {}'.format(temp_folder_path))
+
+    # get the files from the repository
+    files = repo.get_contents('update')
+    print(files)
 
 
 def start_main_program(location):
